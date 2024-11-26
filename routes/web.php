@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,7 +19,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('client', ClientController::class);
-Route::get('client/{id}/edit', 'ClientController@edit')->name('client.edit');
-Route::put('client/{id}', 'ClientController@update')->name('client.update');
-Route::delete('client/{id}', 'ClientController@destroy')->name('client.destroy');
+// Routes d'authentification
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Groupe de routes avec middleware 'auth'
+Route::middleware(['auth'])->group(function () {
+    // Routes pour le ClientController
+    Route::resource('client', ClientController::class);
+    Route::get('client/{id}/edit', [ClientController::class, 'edit'])->name('client.edit');
+    Route::put('client/{id}', [ClientController::class, 'update'])->name('client.update');
+    Route::delete('client/{id}', [ClientController::class, 'destroy'])->name('client.destroy');
+
+    // Route pour le tableau de bord
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
