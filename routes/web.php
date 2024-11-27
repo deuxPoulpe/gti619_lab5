@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,4 +37,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+});
+
+Route::middleware(['auth', 'role:Administrateur'])->group(function () {
+    Route::get('/admin/security-settings', [AdminController::class, 'securitySettings'])->name('admin.security-settings');
 });
