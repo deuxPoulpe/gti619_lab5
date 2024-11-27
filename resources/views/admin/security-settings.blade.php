@@ -25,7 +25,7 @@
             <input type="number" class="form-control" id="password_expiry" name="password_expiry" required>
         </div>
 
-        <!-- Normes de complexité pour les mots de passe -->
+        <!-- Norme de complexité pour les mots de passe -->
         <h2 class="my-4">Normes de complexité pour les mots de passe</h2>
         <div class="form-group">
             <label for="password_complexity">Complexité du mot de passe</label>
