@@ -15,6 +15,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('dashboard') }}">Tableau de bord</a>
                     </li>
+                    @if (Auth::user()->hasRole('Administrateur') || Auth::user()->hasRole('Préposé aux clients résidentiels'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('clients.residential') }}">Clients résidentiels</a>
+                        </li>
+                    @endif
+                    @if (Auth::user()->hasRole('Administrateur') || Auth::user()->hasRole('Préposé aux clients d’affaire'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('clients.business') }}">Clients d’affaire</a>
+                        </li>
+                    @endif
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST" class="form-inline">
                             @csrf

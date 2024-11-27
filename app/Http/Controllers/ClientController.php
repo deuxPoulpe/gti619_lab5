@@ -35,16 +35,16 @@ class ClientController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    { $this->validate($request, [
-        'first_name'    =>  'required',
-        'last_name'     =>  'required'
-    ]);
-    $client = new client([
-        'first_name'    =>  $request->get('first_name'),
-        'last_name'     =>  $request->get('last_name')
-    ]);
-    $client->save();
-    return redirect()->route('client.index')->with('success', 'Client ajouté');
+    {
+        $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'type' => 'required|in:residential,business',
+        ]);
+
+        Client::create($request->all());
+
+        return redirect()->route('client.index')->with('success', 'Client ajouté avec succès.');
     }
 
     /**
@@ -79,15 +79,16 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'first_name'    =>  'required',
-            'last_name'     =>  'required'
+        $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'type' => 'required|in:residential,business',
         ]);
-        $client = client::find($id);
-        $client->first_name = $request->get('first_name');
-        $client->last_name = $request->get('last_name');
-        $client->save();
-        return redirect()->route('client.index')->with('success', 'Client modifié');
+
+        $client = Client::findOrFail($id);
+        $client->update($request->all());
+
+        return redirect()->route('client.index')->with('success', 'Client mis à jour avec succès.');
     }
 
     /**
@@ -101,5 +102,17 @@ class ClientController extends Controller
         $client = client::find($id);
         $client->delete();
         return redirect()->route('client.index')->with('success', 'Client supprimé');
+    }
+
+    public function residentialClients()
+    {
+        $clients = Client::where('type', 'residential')->get();
+        return view('client.residential', compact('clients'));
+    }
+
+    public function businessClients()
+    {
+        $clients = Client::where('type', 'business')->get();
+        return view('client.business', compact('clients'));
     }
 }

@@ -42,3 +42,11 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'role:Administrateur'])->group(function () {
     Route::get('/admin/security-settings', [AdminController::class, 'securitySettings'])->name('admin.security-settings');
 });
+
+Route::middleware(['auth', 'role:Administrateur|Préposé aux clients résidentiels'])->group(function () {
+    Route::get('/clients/residential', [ClientController::class, 'residentialClients'])->name('clients.residential');
+});
+
+Route::middleware(['auth', 'role:Administrateur|Préposé aux clients d’affaire'])->group(function () {
+    Route::get('/clients/business', [ClientController::class, 'businessClients'])->name('clients.business');
+});
