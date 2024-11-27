@@ -1,35 +1,27 @@
-@extends('master')
+@extends('layouts.app')
 
 @section('content')
-
-<div class="row">
- <div class="col-md-12">
-  <br />
-  <h3>Edit Record</h3>
-  <br />
-  @if(count($errors) > 0)
-
-  <div class="alert alert-danger">
-         <ul>
-         @foreach($errors->all() as $error)
-          <li>{{$error}}</li>
-         @endforeach
-         </ul>
-  @endif 
-  <form method="post" action="{{route('client.update',['id'=>  $id])}}">
-   {{csrf_field()}}
-   <input type="hidden" name="_method" value="PATCH" />
-   <div class="form-group">
-    <input type="text" name="first_name" class="form-control" value="{{$client->first_name}}" placeholder="Enter First Name" />
-   </div>
-   <div class="form-group">
-    <input type="text" name="last_name" class="form-control" value="{{$client->last_name}}" placeholder="Enter Last Name" />
-   </div>
-   <div class="form-group">
-    <input type="submit" class="btn btn-primary" value="Edit" />
-   </div>
-  </form>
- </div>
+<div class="container">
+    <h1>Modifier un client</h1>
+    <form method="POST" action="{{ route('client.update', $client->id) }}">
+        @csrf
+        @method('PUT')
+        <div class="form-group">
+            <label for="first_name">Prénom</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ $client->first_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="last_name">Nom</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ $client->last_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="type">Type de client</label>
+            <select class="form-control" id="type" name="type" required>
+                <option value="residential" {{ $client->type == 'residential' ? 'selected' : '' }}>Résidentiel</option>
+                <option value="business" {{ $client->type == 'business' ? 'selected' : '' }}>D’affaire</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
 </div>
-
 @endsection
