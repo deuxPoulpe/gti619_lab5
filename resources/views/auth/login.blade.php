@@ -39,47 +39,22 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="A3" class="col-md-4 col-form-label text-md-right">Grid Card Value (A3)</label>
+                        {{-- Grid Card Validation Fields --}}
+                        @foreach ($required_coordinates as $coordinate)
+                            <div class="form-group row">
+                                <label for="{{ $coordinate }}" class="col-md-4 col-form-label text-md-right">Grid Card Value ({{ $coordinate }})</label>
 
-                            <div class="col-md-6">
-                                <input id="A3" type="text" class="form-control @error('A3') is-invalid @enderror" name="A3" required>
+                                <div class="col-md-6">
+                                    <input id="{{ $coordinate }}" type="text" class="form-control @error($coordinate) is-invalid @enderror" name="{{ $coordinate }}" required>
 
-                                @error('A3')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                    @error($coordinate)
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="B2" class="col-md-4 col-form-label text-md-right">Grid Card Value (B2)</label>
-
-                            <div class="col-md-6">
-                                <input id="B2" type="text" class="form-control @error('B2') is-invalid @enderror" name="B2" required>
-
-                                @error('B2')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="C1" class="col-md-4 col-form-label text-md-right">Grid Card Value (C1)</label>
-
-                            <div class="col-md-6">
-                                <input id="C1" type="text" class="form-control @error('C1') is-invalid @enderror" name="C1" required>
-
-                                @error('C1')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
+                        @endforeach
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
