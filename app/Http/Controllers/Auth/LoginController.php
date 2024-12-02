@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
@@ -63,8 +62,39 @@ class LoginController extends Controller
             $this->securityLogger->logSuccessfulLogin($request->email, $request->ip(), $request->userAgent());
             RateLimiter::clear($key); // Réinitialiser le compteur après une connexion réussie
             $request->session()->regenerate();
+
             Cache::forget($key); // Réinitialiser les tentatives échouées après une connexion réussie
-            return redirect()->intended('dashboard');
+            $user = Auth::user();
+            $gridCard = $user->gridCard;
+
+            if (!$gridCard) {
+                Auth::logout();
+                return back()->withErrors(['grid_value' => 'No Grid Card found for this user.']);
+            }
+
+            $expectedValue = null;
+            switch ($user->email) {
+                case 'admin@example.com':
+                    $expectedValue = 1000;
+                    break;
+                case 'user1@example.com':
+                    $expectedValue = 2000;
+                    break;
+                case 'user2@example.com':
+                    $expectedValue = 3000;
+                    break;
+                default:
+                    Auth::logout();
+                    return back()->withErrors(['grid_value' => 'Unexpected user email.']);
+            }
+
+            if ($request->input('grid_value') == $expectedValue) {
+                return redirect()->intended('dashboard');
+            } else {
+                Auth::logout();
+                return back()->withErrors(['grid_value' => 'Invalid Grid Card value.']);
+            }
+
         }
 
         // Vérifier si l'utilisateur doit attendre avant de réessayer
@@ -120,3 +150,4 @@ class LoginController extends Controller
         return Str::lower($request->input('email')) . '|' . $request->ip();
     }
 }
+
