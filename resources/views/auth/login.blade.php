@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -40,19 +39,22 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="grid_value" class="col-md-4 col-form-label text-md-right">Grid Card Value</label>
+                        {{-- Grid Card Validation Fields --}}
+                        @foreach ($required_coordinates as $coordinate)
+                            <div class="form-group row">
+                                <label for="{{ $coordinate }}" class="col-md-4 col-form-label text-md-right">Grid Card Value ({{ $coordinate }})</label>
 
-                            <div class="col-md-6">
-                                <input id="grid_value" type="text" class="form-control @error('grid_value') is-invalid @enderror" name="grid_value" required>
+                                <div class="col-md-6">
+                                    <input id="{{ $coordinate }}" type="text" class="form-control @error($coordinate) is-invalid @enderror" name="{{ $coordinate }}" required>
 
-                                @error('grid_value')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                    @error($coordinate)
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
