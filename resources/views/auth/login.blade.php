@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -41,12 +40,40 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="grid_value" class="col-md-4 col-form-label text-md-right">Grid Card Value</label>
+                            <label for="A3" class="col-md-4 col-form-label text-md-right">Grid Card Value (A3)</label>
 
                             <div class="col-md-6">
-                                <input id="grid_value" type="text" class="form-control @error('grid_value') is-invalid @enderror" name="grid_value" required>
+                                <input id="A3" type="text" class="form-control @error('A3') is-invalid @enderror" name="A3" required>
 
-                                @error('grid_value')
+                                @error('A3')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="B2" class="col-md-4 col-form-label text-md-right">Grid Card Value (B2)</label>
+
+                            <div class="col-md-6">
+                                <input id="B2" type="text" class="form-control @error('B2') is-invalid @enderror" name="B2" required>
+
+                                @error('B2')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="C1" class="col-md-4 col-form-label text-md-right">Grid Card Value (C1)</label>
+
+                            <div class="col-md-6">
+                                <input id="C1" type="text" class="form-control @error('C1') is-invalid @enderror" name="C1" required>
+
+                                @error('C1')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
