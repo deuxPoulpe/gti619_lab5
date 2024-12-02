@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\SaltDemoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,17 @@ use App\Http\Controllers\AdminController;
 Route::get('/', function () {
     return view('welcome');
 });
+// Afficher le formulaire pour demander un lien de réinitialisation
+Route::get('/password/reset', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
+
+// Envoyer un e-mail avec le lien de réinitialisation
+Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Afficher le formulaire de réinitialisation de mot de passe
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+
+// Réinitialiser le mot de passe
+Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 
 // Routes d'authentification
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -50,3 +63,7 @@ Route::middleware(['auth', 'role:Administrateur|Préposé aux clients résidenti
 Route::middleware(['auth', 'role:Administrateur|Préposé aux clients d’affaire'])->group(function () {
     Route::get('/clients/business', [ClientController::class, 'businessClients'])->name('clients.business');
 });
+
+
+Route::get('/saltdemo', [SaltDemoController::class, 'showForm'])->name('saltdemo.form');
+Route::post('/saltdemo/test', [SaltDemoController::class, 'testPassword'])->name('saltdemo.test');
