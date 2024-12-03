@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -40,14 +41,16 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <label for="grid_value" class="col-md-4 col-form-label text-md-right">Grid Card Value</label>
 
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
-                                </div>
+                            <div class="col-md-6">
+                                <input id="grid_value" type="text" class="form-control @error('grid_value') is-invalid @enderror" name="grid_value" required>
+
+                                @error('grid_value')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                         </div>
 
