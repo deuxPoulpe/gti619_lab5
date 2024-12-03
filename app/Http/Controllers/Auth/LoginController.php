@@ -10,8 +10,13 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use App\Services\SecurityLogger;
 
+
 class LoginController extends Controller
 {
+
+    protected $maxAttempts; // Nombre maximum de tentatives
+    protected $decaySeconds; // Délai entre chaque tentative
+
     private $predefinedGrids = [
         'admin@example.com' => [
             'A1' => 'X7D', 'A2' => 'K2L', 'A3' => 'P3F', 'A4' => 'Q9N',
@@ -29,13 +34,14 @@ class LoginController extends Controller
             'C1' => 'U7M', 'C2' => 'V2X', 'C3' => 'W9K', 'C4' => 'X4N',
         ],
     ];
-    protected $maxAttempts = 5; // Nombre maximal de tentatives
-    protected $decaySeconds = 10; // Durée de blocage entre les tentatives
+
 
     protected $securityLogger;
     public function __construct(SecurityLogger $securityLogger)
     {
         $this->securityLogger = $securityLogger;
+        $this->maxAttempts = config('security.max_attempts');
+        $this->decaySeconds = config('security.delay_between_attempts');
     }
 
 

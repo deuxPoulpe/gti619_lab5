@@ -6,6 +6,8 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\SaltDemoController;
+use App\Http\Controllers\SecuritySettingsController;
+use App\Http\Controllers\PasswordChangeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,3 +69,10 @@ Route::middleware(['auth', 'role:Administrateur|Préposé aux clients d’affair
 
 Route::get('/saltdemo', [SaltDemoController::class, 'showForm'])->name('saltdemo.form');
 Route::post('/saltdemo/test', [SaltDemoController::class, 'testPassword'])->name('saltdemo.test');
+
+Route::get('/admin/security-settings', [SecuritySettingsController::class, 'index'])->name('admin.security-settings');
+Route::put('/admin/security-settings', [SecuritySettingsController::class, 'update'])->name('admin.security-settings.update');
+
+Route::get('/change-password', [PasswordChangeController::class, 'showChangePasswordForm'])->name('password.change');
+Route::post('/change-password', [PasswordChangeController::class, 'changePassword'])->name('password.update');
+
