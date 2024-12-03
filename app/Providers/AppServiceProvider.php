@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Validator::replacer('password_complexity', function($message, $attribute, $rule, $parameters) {
-            return 'Password must be at least 8 characters long, including uppercase letters, lowercase letters, numbers and special characters.';
+            return (new PasswordComplexity)->message();
         });
     }
 }
