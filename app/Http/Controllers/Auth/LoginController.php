@@ -37,6 +37,7 @@ class LoginController extends Controller
 
 
     protected $securityLogger;
+
     public function __construct(SecurityLogger $securityLogger)
     {
         $this->securityLogger = $securityLogger;
@@ -44,13 +45,12 @@ class LoginController extends Controller
         $this->decaySeconds = config('security.delay_between_attempts');
     }
 
-
     public function showLoginForm()
     {
         $allCoordinates = array_keys($this->predefinedGrids['admin@example.com']);
         $requiredCoordinates = collect($allCoordinates)->random(3)->toArray();
 
-          session(['required_coordinates' => $requiredCoordinates]);
+        session(['required_coordinates' => $requiredCoordinates]);
 
         return view('auth.login', ['required_coordinates' => $requiredCoordinates]);
     }
@@ -70,70 +70,69 @@ class LoginController extends Controller
             ]);
         }
 
-        // Récupérer les tentatives échouées depuis le cache
-        $attempts = Cache::get($key, 0);
+   // Récupérer les tentatives échouées depuis le cache
+   $attempts = Cache::get($key, 0);
 
-        // Vérifier si trop de tentatives ont été effectuées
-        if ($attempts >= $this->maxAttempts) {
-            // Bloquer l'utilisateur après le nombre de tentatives échouées
-            if ($user) {
-                $user->update(['is_blocked' => true]);
-            }
-            return back()->withErrors([
-                'email' => 'Votre compte est bloqué après plusieurs tentatives échouées. Contactez l\'administrateur pour le débloquer.',
-            ]);
+   // Vérifier si trop de tentatives ont été effectuées
+   if ($attempts >= $this->maxAttempts) {
+       // Bloquer l'utilisateur après le nombre de tentatives échouées
+       if ($user) {
+           $user->update(['is_blocked' => true]);
+       }
+       return back()->withErrors([
+           'email' => 'Votre compte est bloqué après plusieurs tentatives échouées. Contactez l\'administrateur pour le débloquer.',
+       ]);
+   }
+
+   $credentials = $request->only('email', 'password');
+
+   if (!Auth::attempt($credentials)) {
+       return back()->withErrors([
+           'email' => 'Invalid email or password.',
+       ])->withInput();
+   }
+
+   $user = Auth::user();
+   $userEmail = $user->email;
+
+
+  // Tentative de connexion
+  if (Auth::attempt($credentials)) {
+    $this->securityLogger->logSuccessfulLogin($request->email, $request->ip(), $request->userAgent());
+    RateLimiter::clear($key); // Réinitialiser le compteur après une connexion réussie
+    $request->session()->regenerate();
+
+    Cache::forget($key); // Réinitialiser les tentatives échouées après une connexion réussie
+    $user = Auth::user();
+    $gridCard = $user->gridCard;
+
+    if (!isset($this->predefinedGrids[$userEmail])) {
+        Auth::logout();
+        return back()->withErrors(['grid_value' => 'Security grid not configured.']);
+    }
+
+    $gridValues = $this->predefinedGrids[$userEmail];
+    $requiredCoordinates = session('required_coordinates', []);
+
+    $errors = [];
+    foreach ($requiredCoordinates as $coordinate) {
+        $inputValue = $request->input($coordinate);
+
+        if (!$inputValue) {
+            $errors[$coordinate] = "Missing $coordinate coordinate.";
+        } elseif ($inputValue !== $gridValues[$coordinate]) {
+            $errors[$coordinate] = "Incorrect $coordinate value.";
         }
+    }
 
-        $credentials = $request->only('email', 'password');
+    if (!empty($errors)) {
+        Auth::logout();
+        return back()->withErrors($errors)->withInput();
+    }
 
-        if (!Auth::attempt($credentials)) {
-            return back()->withErrors([
-                'email' => 'Invalid email or password.',
-            ])->withInput();
-        }
-
-        $user = Auth::user();
-        $userEmail = $user->email;
-
-
-        // Tentative de connexion
-        if (Auth::attempt($credentials)) {
-            $this->securityLogger->logSuccessfulLogin($request->email, $request->ip(), $request->userAgent());
-            RateLimiter::clear($key); // Réinitialiser le compteur après une connexion réussie
-            $request->session()->regenerate();
-
-            Cache::forget($key); // Réinitialiser les tentatives échouées après une connexion réussie
-            $user = Auth::user();
-            $gridCard = $user->gridCard;
-
-        if (!isset($this->predefinedGrids[$userEmail])) {
-            Auth::logout();
-            return back()->withErrors(['grid_value' => 'Security grid not configured.']);
-        }
-
-        $gridValues = $this->predefinedGrids[$userEmail];
-        $requiredCoordinates = session('required_coordinates', []);
-
-
-        $errors = [];
-        foreach ($requiredCoordinates as $coordinate) {
-            $inputValue = $request->input($coordinate);
-
-            if (!$inputValue) {
-                $errors[$coordinate] = "Missing $coordinate coordinate.";
-            } elseif ($inputValue !== $gridValues[$coordinate]) {
-                $errors[$coordinate] = "Incorrect $coordinate value.";
-            }
-          
-        if (!empty($errors)) {
-            Auth::logout();
-            return back()->withErrors($errors)->withInput();
-        }
-
-        $request->session()->regenerate();
-        return redirect()->intended('dashboard');
-
-        }
+    $request->session()->regenerate();
+    return redirect()->intended('dashboard');
+}
 
 
         // Vérifier si l'utilisateur doit attendre avant de réessayer
@@ -156,7 +155,7 @@ class LoginController extends Controller
         $remainingAttempts = $this->maxAttempts - $attempts;
         $remainingTime = RateLimiter::availableIn($key); // Temps restant avant la prochaine tentative
 
-        // Afficher un message en fonction des tentatives restantes       
+        // Afficher un message en fonction des tentatives restantes
         if ($remainingAttempts > 0) {
             return back()->withErrors([
                 'email' => "Identifiants invalides. Vous avez encore $remainingAttempts tentatives avant le blocage. Attendez $remainingTime secondes avant de réessayer.",
@@ -166,8 +165,8 @@ class LoginController extends Controller
                 'email' => "Identifiants invalides. Vous avez atteint le nombre maximum de tentatives. Votre compte sera bloqué si vous continuez à échouer. ",
             ]);
         }
-
     }
+
 
     public function logout(Request $request)
     {
